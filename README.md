@@ -32,9 +32,9 @@ There are many reasons to make some or all characters in a LARP gender-switchabl
 
 * Sometimes LARPs experience last-minute player drop-outs and replacements. This compounds the problem described above. An organiser can potentially replace a player with any other player irrespective of gender if that player is playing a gender-switchable character -- this makes last-minute replacements a lot less stressful.
 
-* Personally I believe that in many cases writing characters in a more gender-neutral way leads to better-written, more interesting characters which rely less on gendered tropes and stereotypes. Your mieage may vary, and of course I understand that this approach may not work equally well in all fiction settings and genres.
+* Personally I believe that in many cases writing characters in a more gender-neutral way leads to better-written, more interesting characters which rely less on gendered tropes and stereotypes. Your mileage may vary, and of course I understand that this approach may not work equally well in all fiction settings and genres.
 
-While it is possible to change the gender of a character without making any alterations to the text, telling all the players to make a mental substitution as they play, this is not an ideal solution. It can break immersion and cause confusion. It's really nice to be able to hand out printed character sheets with all the names and pronouns seamlessly changed to reflect the actual state of the player pool.
+While it is possible to change the gender of a character without making any alterations to the text, telling all the players to make a mental substitution as they play, this is not an ideal solution. It can break immersion and cause confusion. It's really nice to be able to distribute nicely typeset character sheets with all the names and pronouns seamlessly changed to reflect the actual state of the player pool.
 
 Why is this hard?
 -----------------
