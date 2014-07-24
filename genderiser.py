@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import re
+import os
 import ConfigParser
 
 class Genderiser(object):
@@ -29,6 +30,9 @@ class Genderiser(object):
 
     def parse(self, *files):
         output_dir = self.cp.get('main', 'output_dir')
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+
         variable_regex = self.cp.get('main', 'variable_regex')
         key_error_mode = self.cp.get('main', 'key_error_mode')
 
@@ -48,7 +52,8 @@ class Genderiser(object):
 
         for filename in files:
             with open(filename, 'r') as infile:
-                with open('%s/%s' % (output_dir, filename), 'w') as outfile:
+                outfilename = os.path.join(output_dir, os.path.basename(filename))
+                with open(outfilename, 'w') as outfile:
                     for line in infile:
                         line = VAR.sub(var_sub, line)
                         outfile.write(line)

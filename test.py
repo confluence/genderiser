@@ -1,4 +1,5 @@
 import unittest
+import os
 from genderiser import Genderiser
 
 class TestGenderiser(unittest.TestCase):
@@ -23,13 +24,13 @@ class TestGenderiser(unittest.TestCase):
         }
 
         g = Genderiser()
-        g.read_config('config', 'example/config')
+        g.read_config('config', os.path.join('example','config'))
         self.assertEqual(g.substitutions, expected_substitutions)
 
     def test_parsing(self):
         g = Genderiser()
-        g.read_config('config', 'example/config')
-        g.parse('example/Alice.txt')
+        g.read_config('config', os.path.join('example','config'))
+        g.parse(os.path.join('example','Alice.txt'))
 
 
 if __name__ == '__main__':
