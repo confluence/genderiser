@@ -3,6 +3,7 @@ TODO
 * optional verbose output reporting what substitutions are to be made, what files are processed, etc..
 * where does config live? Run it from current dir for now? Python package ASAP?
 * option of only outputting a dictionary of substitutions in various formats, to allow later integration with other tools
+* for the same reason, and for ease of testing, option to read config from text
 * option of inheritance for other genders, so that all sets of gender-neutral pronouns can use the same gender-neutral words
 * Possibility for Word documents: https://github.com/python-openxml/python-docx
 * Also want: odt
