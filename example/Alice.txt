@@ -1,0 +1,1 @@
+You know a {$smith_person} called {$smith_name} Smith. {$Smith_they} has a {$jones_sibling} called {$jones_name} Jones.

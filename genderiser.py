@@ -28,8 +28,29 @@ class Genderiser(object):
                     self.substitutions['%s_%s' % (surname, key)] = value
 
     def parse(self, *files):
-        output_dir = self.cp.get('default', 'output_dir')
-        
-        # do the replacements
+        output_dir = self.cp.get('main', 'output_dir')
+        variable_regex = self.cp.get('main', 'variable_regex')
+        key_error_mode = self.cp.get('main', 'key_error_mode')
+
+        VAR = re.compile(variable_regex)
+
+        def var_sub(m):
+            surname, word = m.groups()
+            sub = self.substitutions.get('%s_%s' % (surname.lower(), word.lower()))
+            if sub:
+                if surname != surname.lower():
+                    return sub.capitalize()
+                return sub
+            elif key_error_mode == 'quiet':
+                return word
+            else:
+                return 'UNKNOWN'
+
+        for filename in files:
+            with open(filename, 'r') as infile:
+                with open('%s/%s' % (output_dir, filename), 'w') as outfile:
+                    for line in infile:
+                        line = VAR.sub(var_sub, line)
+                        outfile.write(line)
 
 
