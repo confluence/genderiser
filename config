@@ -1,7 +1,4 @@
 [main]
-# The directory to which modified files will be written:
-output_dir = output
-
 # The regular expression to be used for variables. Must contain at least two groups: one for the character identifier and one for the word identifier. The default regular expression matches variables of the form surname_word:
 variable_regex = ([A-Za-z]+)_([A-Za-z]+)
 

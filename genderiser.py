@@ -2,7 +2,10 @@
 
 import re
 import os
+import sys
+import glob
 import ConfigParser
+import StringIO
 import argparse
 
 class Genderiser(object):
@@ -11,8 +14,11 @@ class Genderiser(object):
         self.cp = ConfigParser.SafeConfigParser()
         self.substitutions = {}
 
-    def read_config(self, *files):
-        self.cp.read(files)
+    def read_config(self, *files, **kwargs):
+        if 'text' in kwargs:
+            self.cp.readfp(StringIO.StringIO(kwargs['text']))
+        else:
+            self.cp.read(files)
         
         for surname, gender in self.cp.items('characters'):
             if gender not in self.cp.options('genders'):
@@ -29,8 +35,8 @@ class Genderiser(object):
                 else: # generic word
                     self.substitutions['%s_%s' % (surname, key)] = value
 
-    def parse(self, *files):
-        output_dir = self.cp.get('main', 'output_dir')
+    def replace(self, *files, **kwargs):
+        output_dir = kwargs.get('output_dir', 'output')
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
@@ -59,19 +65,36 @@ class Genderiser(object):
                         line = VAR.sub(var_sub, line)
                         outfile.write(line)
 
-    @classmethod
-    def launch_from_args(cls, args):
+    def subs_as_text(self):
         pass
-        # process the args here
          
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Replace placeholder variables with gendered words in text files")
     parser.add_argument("dir", help="Directory of files to process")
     parser.add_argument("-d", "--config-dir", help="Directory with your custom configuration files. By default the directory with files to be processed will be used.")
+    parser.add_argument("-o", "--output-dir", default="output", help="Directory to which modified files will be written.")
     parser.add_argument("-c", "--config", help="String containing custom config to be used. Replaces the custom config directory.")
-    # todo: list subs only
+    parser.add_argument("-s", "--subs-only", help="Don't process any files; just output a list of substitutions", action="store_true")
     parser.add_argument("-v", "--verbose", help="Turn on verbose output", action="count")
 
     args = parser.parse_args()
+
+    gen = Genderiser()
+
+    if args.config:
+        gen.read_config(text=args.config)
+    elif args.config_dir:
+        gen.read_config('config', os.path.join(args.config_dir,'config'))
+    elif args.dir:
+        gen.read_config('config', os.path.join(args.dir,'config'))
+    elif not args.subs_only:
+        print "No project directory specified. Exiting."
+        sys.exit(1)
+
+    if args.subs_only:
+        print gen.subs_as_text()
+    elif args.dir:
+        files = glob.glob(os.path.join(args.dir, '*.txt'))
+        gen.replace(output_dir, *files, **{'output_dir': args.output_dir})
     

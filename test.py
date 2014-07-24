@@ -30,7 +30,7 @@ class TestGenderiser(unittest.TestCase):
     def test_parsing(self):
         g = Genderiser()
         g.read_config('config', os.path.join('example','config'))
-        g.parse(os.path.join('example','Alice.txt'))
+        g.replace(os.path.join('example','Alice.txt'))
 
 
 if __name__ == '__main__':
