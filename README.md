@@ -28,7 +28,7 @@ What does this have to do with gender?
 
 There are many reasons to make some or all characters in a LARP gender-switchable, and to have a process for making these switches quickly at short notice:
 
-* In my experience it is less commonplace for people to play cross-gender characters in LARPs than in tabletop games: in general people prefer to play characters which align with their real-life gender.. If all characters in a LARP have a fixed gender, this creates a rigid requirement for the gender split among the players in any given run, which may be difficult to satisfy and makes life difficult for the organiser. Sometimes there are too many interested players of a particular gender, and sometimes there are too few.  Gender-switchable characters allow the organiser to adjust the scenario to any player pool.
+* In my experience it is less commonplace for people to play cross-gender characters in LARPs than in tabletop games: in general people prefer to play characters which align with their real-life gender. If all characters in a LARP have a fixed gender, this creates a rigid requirement for the gender split among the players in any given run, which may be difficult to satisfy and makes life difficult for the organiser. Sometimes there are too many interested players of a particular gender, and sometimes there are too few.  Gender-switchable characters allow the organiser to adjust the scenario to any player pool.
 
 * Sometimes LARPs experience last-minute player drop-outs and replacements. This compounds the problem described above. An organiser can potentially replace a player with any other player irrespective of gender if that player is playing a gender-switchable character -- this makes last-minute replacements a lot less stressful.
 
