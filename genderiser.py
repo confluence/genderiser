@@ -3,6 +3,7 @@
 import re
 import os
 import ConfigParser
+import argparse
 
 class Genderiser(object):
 
@@ -58,4 +59,19 @@ class Genderiser(object):
                         line = VAR.sub(var_sub, line)
                         outfile.write(line)
 
+    @classmethod
+    def launch_from_args(cls, args):
+        pass
+        # process the args here
+         
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Replace placeholder variables with gendered words in text files")
+    parser.add_argument("dir", help="Directory of files to process")
+    parser.add_argument("-d", "--config-dir", help="Directory with your custom configuration files. By default the directory with files to be processed will be used.")
+    parser.add_argument("-c", "--config", help="String containing custom config to be used. Replaces the custom config directory.")
+    # todo: list subs only
+    parser.add_argument("-v", "--verbose", help="Turn on verbose output", action="count")
+
+    args = parser.parse_args()
+    
