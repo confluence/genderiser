@@ -1,0 +1,12 @@
+TODO
+
+* basic pronouns
+* customizable gender options
+* customizable additional global gendered words
+* customizable per-character gendered words, like first names; should be extendable to random other things, like last names
+* variable behaviour for keys which are not found: fallback to key or obvious error
+* optional verbose output reporting what substitutions are to be made, what files are processed, etc..
+* where does config live? Run it from current dir for now? Python package ASAP?
+* write tests
+* option of only outputting a dictionary of substitutions in various formats, to allow later integration with other tools
+* later: custom variable regex?

@@ -1,0 +1,19 @@
+[characters]
+# keys are identifiers which will be used in the placeholder variables to distinguish characters
+# values are genders
+smith = male
+jones = female
+
+[genders]
+male =
+female =
+
+[male]
+sibling = brother
+smith_name = John
+jones_name = Mark
+
+[female]
+sibling = sister
+smith_name = Jane
+jones_name = Mary

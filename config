@@ -1,0 +1,16 @@
+[default]
+output_dir = output
+
+[male]
+they = he
+them = him
+their = his
+theirs = his
+themselves = himself
+
+[female]
+they = she
+them = her
+their = her
+theirs = hers
+themselves = herself
