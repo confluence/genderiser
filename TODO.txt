@@ -1,7 +1,7 @@
 TODO
 
 * add basic command-line API
-* files: specify files or dirs; autodetect documents inside dirs; add recursive discovery option
+* files: specify individual files; can use globbing outside
 * make this into a proper package with a directory the default config lives in and stuff
 
 * make all commandline options permanently configurable in the file?
