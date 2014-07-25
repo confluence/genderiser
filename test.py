@@ -28,9 +28,12 @@ class TestGenderiser(unittest.TestCase):
         self.assertEqual(g.substitutions, expected_substitutions)
 
     def test_parsing(self):
+        expected_output = "You know a man called John Smith. He has a sister called Mary Jones."
+        
         g = Genderiser()
         g.read_config('config', os.path.join('example','config'))
-        g.replace(os.path.join('example','Alice.txt'))
+        output = "".join(line for line in g.replace(None, os.path.join('example','Alice.txt'))).strip()
+        self.assertEqual(output, expected_output)
 
 
 if __name__ == '__main__':

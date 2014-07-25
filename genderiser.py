@@ -66,10 +66,10 @@ class Genderiser(object):
 
                 else:
                     for line in infile:
-                        print VAR.sub(var_sub, line)
+                        yield VAR.sub(var_sub, line)
 
                     if i + 1 < len(files):
-                        print "----"
+                        yield "----"
 
     def __str__(self):
         return ",".join("%s:%s" % (k, v) for (k, v) in self.substitutions.iteritems())
@@ -99,8 +99,11 @@ if __name__ == "__main__":
     if args.subs_only:
         print gen
     elif args.files:
-        output_dir = args.output_dir if not args.preview else None
-        gen.replace(output_dir, *args.files)
+        if args.preview:
+            for line in gen.replace(None, *args.files):
+                print line
+        else:
+            gen.replace(args.output_dir, *args.files)
     else:
         print "No files specified. Exiting."
         sys.exit(1)
