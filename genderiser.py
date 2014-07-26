@@ -41,7 +41,7 @@ class Genderiser(object):
                 raise GenderiserError("No configuration section found for gender %r." % gender)
 
             for key, value in self.cp.items(gender):
-                if "_" in key and key.startswith(surname): # special variable for this character
+                if key.startswith("%s_" % surname): # special variable for this character
                     self.subs[key] = value
                 elif "_" in key: # special variable for a different character
                     continue

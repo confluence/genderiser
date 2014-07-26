@@ -10,26 +10,9 @@ class TestGenderiser(unittest.TestCase):
 
         self.expected_alice = "You know a man called John Smith. He has a sister called Mary Jones."
 
-        self.expected_subs = {
-            "jones_name": "Mary",
-            "jones_person": "woman",
-            "jones_sibling": "sister",
-            "jones_their": "her",
-            "jones_theirs": "hers",
-            "jones_them": "her",
-            "jones_themselves": "herself",
-            "jones_they": "she",
-            "smith_name": "John",
-            "smith_person": "man",
-            "smith_sibling": "brother",
-            "smith_their": "his",
-            "smith_theirs": "his",
-            "smith_them": "him",
-            "smith_themselves": "himself",
-            "smith_they": "he",
-        }
+        self.expected_subs = {"smith_their": "his", "jones_sibling": "sister", "smith_they": "he", "smith_name": "John", "jones_they": "she", "smith_themselves": "himself", "jones_person": "woman", "smith_sibling": "brother", "jones_their": "her", "jones_themselves": "herself", "smith_them": "him", "jones_theirs": "hers", "jones_name": "Mary", "jones_them": "her", "smith_theirs": "his", "smith_person": "man"}
 
-        self.expected_subs_str = "jones_name:Mary,jones_person:woman,jones_sibling:sister,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,smith_name:John,smith_person:man,smith_sibling:brother,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he"
+        self.expected_subs_str = "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy"
     
     def last_out(self, strip=True):
         out = self.stdout.getvalue().strip()
@@ -37,15 +20,11 @@ class TestGenderiser(unittest.TestCase):
         sys.stdout = self.stdout
         return out
 
-    def test_config(self):
-        g = Genderiser("example")
-        self.assertEquals(g.subs, self.expected_subs)
-
-    def test_parsing(self):        
+    def test_preview(self):        
         main(["-p", "example"])
         self.assertEquals(self.last_out(), self.expected_alice)
 
-    def test_not_missing(self):
+    def test_nothing_missing(self):
         main(["-m", "example"])
         self.assertEquals(self.last_out(), "")
 
@@ -60,14 +39,10 @@ smith = male
 jones = female
 
 [male]
-sibling = brother
-person = man
 smith_name = John
 jones_name = Mark
 
 [female]
-sibling = sister
-person = woman
 smith_name = Jane
 jones_name = Mary
         """.replace("\n","\\n")
