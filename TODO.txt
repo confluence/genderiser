@@ -1,5 +1,6 @@
 TODO
 
+* how do we pass a multiline string to the program?
 * think about packaging
 * optional verbose output reporting what substitutions are to be made, what files are processed, etc..
 

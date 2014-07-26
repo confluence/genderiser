@@ -26,7 +26,7 @@ class Genderiser(object):
         self.cp.read(config_files)
         
         if config_text is not None:
-            self.cp.readfp(StringIO.StringIO(config_text))
+            self.cp.readfp(StringIO.StringIO(config_text.replace("\\n", "\n")))
 
         self.create_subs()
 
@@ -35,10 +35,10 @@ class Genderiser(object):
     def create_subs(self):
         for surname, gender in self.cp.items("characters"):
             if gender not in self.cp.options("genders"):
-                raise ValueError("%r is not listed in the genders configuration section." % gender)
+                raise GenderiserError("%r is not listed in the genders configuration section." % gender)
 
             if gender not in self.cp.sections():
-                raise ValueError("No configuration section found for gender %r." % gender)
+                raise GenderiserError("No configuration section found for gender %r." % gender)
 
             for key, value in self.cp.items(gender):
                 if "_" in key and key.startswith(surname): # special variable for this character
@@ -52,11 +52,13 @@ class Genderiser(object):
         if not self.project_dir:
             raise GenderiserError("No project directory specified.")
 
-        for filename in self.cp.get("files", "files").split(","):
-            self.files.append(filename.strip())
+        if self.cp.has_section("files"):
 
-        if self.cp.has_option("files", "glob"):
-            self.files.extend(glob.glob(self.cp.get("files", "glob")))
+            for filename in self.cp.get("files", "files").split(","):
+                self.files.append(filename.strip())
+
+            if self.cp.has_option("files", "glob"):
+                self.files.extend(glob.glob(self.cp.get("files", "glob")))
 
         if not self.files:
             raise GenderiserError("No files found.")
@@ -120,7 +122,7 @@ class Genderiser(object):
 
     @classmethod
     def create_from(cls, args):
-        return cls(args.dir, args.config)
+        return cls(args.project_dir, args.config)
 
     def process(self, args):
         if args.substitutions:
@@ -137,18 +139,33 @@ class Genderiser(object):
 
 def main(args=None):
     parser = argparse.ArgumentParser(description="Replace placeholder variables with gendered words in text files")
-    parser.add_argument("dir", help="Project directory to process", nargs="?", default=None)
     parser.add_argument("-o", "--output-dir", help="Directory to which modified files will be written. By default a directory named 'output' will be created in the project directory.")
-    parser.add_argument("-c", "--config", help="String containing custom config to be used. May be used in addition to or instead of a project directory.", default=None)
-    parser.add_argument("-s", "--substitutions", help="Suppress all other output and print a list of substitutions.", action="store_true")
-    parser.add_argument("-p", "--preview", help="Suppress all other output and print the modified file contents to standard output.", action="store_true")
-    parser.add_argument("-m", "--missing", help="Suppress all other output and print a list of variables for which no replacements could be found.", action="store_true")
 
-    args = parser.parse_args()
+    parser.add_argument("project_dir", help="Project directory to process", nargs="?", default=None)
+    parser.add_argument("-c", "--config", help="String containing project config. To be used from an external replacement program with -s. Newlines must be escaped with literal \\n.", default=None)
+
+    action = parser.add_mutually_exclusive_group(required=False)
+    action.add_argument("-s", "--substitutions", help="Suppress all other output and print a list of substitutions.", action="store_true")
+    action.add_argument("-p", "--preview", help="Suppress all other output and print the modified file contents to standard output.", action="store_true")
+    action.add_argument("-m", "--missing", help="Suppress all other output and print a list of variables for which no replacements could be found.", action="store_true")
+
+    args = parser.parse_args(args)
+
+    if not (args.project_dir or args.config):
+        parser.print_usage()
+        print "genderiser.py: error: one of project_dir and -c/--config is required"
+        return 1
+
+    elif not (args.project_dir or args.substitutions):
+        parser.print_usage()
+        print "genderiser.py: error: one of project_dir and -s/--substitutions is required"
+        return 1
 
     gen = Genderiser.create_from(args)
     gen.process(args)
 
 
 if __name__ == "__main__":
-    main()
+    returnval = main()
+    if returnval:
+        sys.exit(returnval)
