@@ -88,7 +88,7 @@ class Genderiser(object):
 
                 # print a preview to stdout
                 if preview is not None:
-                    preview.write(text)
+                    print text
 
                 # otherwise try to write to a file
                 elif output_dir is not None:
@@ -102,10 +102,10 @@ class Genderiser(object):
                     with open(outfilename, "w") as outfile:
                         outfile.write(text)
 
-    def substitutions(self, fileobj=sys.stdin):
-        fileobj.write(",".join("%s:%s" % (k, v) for (k, v) in sorted(self.subs.iteritems())))
+    def substitutions(self):
+        print ",".join("%s:%s" % (k, v) for (k, v) in sorted(self.subs.iteritems()))
 
-    def missing(self, fileobj=sys.stdin):
+    def missing(self):
         self.find_files()
         variables_used = set()
 
@@ -116,7 +116,7 @@ class Genderiser(object):
 
         missing_variables = variables_used - set(self.subs) - set(s.capitalize() for s in self.subs)
 
-        fileobj.write(",".join(m for m in missing_variables))
+        print ",".join(m for m in missing_variables)
 
     @classmethod
     def create_from(cls, args):
@@ -132,10 +132,10 @@ class Genderiser(object):
 
             else:
                 output_dir = args.output_dir if not args.preview else None
-                preview = sys.stdout if args.preview else None
-                self.replace(output_dir, preview)
+                self.replace(output_dir, args.preview)
 
-if __name__ == "__main__":
+
+def main(args=None):
     parser = argparse.ArgumentParser(description="Replace placeholder variables with gendered words in text files")
     parser.add_argument("dir", help="Project directory to process", nargs="?", default=None)
     parser.add_argument("-o", "--output-dir", help="Directory to which modified files will be written. By default a directory named 'output' will be created in the project directory.")
@@ -148,3 +148,7 @@ if __name__ == "__main__":
 
     gen = Genderiser.create_from(args)
     gen.process(args)
+
+
+if __name__ == "__main__":
+    main()
