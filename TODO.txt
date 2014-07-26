@@ -1,10 +1,9 @@
 TODO
 
-* make this into a proper package with a directory the default config lives in and stuff
-* make all commandline options permanently configurable in the file?
+* think about packaging
 * optional verbose output reporting what substitutions are to be made, what files are processed, etc..
+
 * option of inheritance for other genders, so that all sets of gender-neutral pronouns can use the same gender-neutral words
-* put word definitions in a config.d directory
 
 * Possibility for Word documents: https://github.com/python-openxml/python-docx
 * Also want: odt
