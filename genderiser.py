@@ -34,7 +34,13 @@ class FileHelper(object):
     @classmethod
     def get_helper(cls, inpath, inputdir):
         if zipfile.is_zipfile(inpath):
-            return OdtFileHelper(inpath, inputdir)
+            with zipfile.ZipFile(inpath, "r") as zipped_infile:
+                filelist = zipped_infile.infolist()
+
+            for ziphelper in (OdtFileHelper, DocxFileHelper):
+                if ziphelper.CONTENTFILE in [f.filename for f in filelist]:
+                    return ziphelper(inpath, inputdir)
+            raise GenderiserError("Unable to detect file type of %r." % inpath)
         else:
             return TextFileHelper(inpath, inputdir)
              
@@ -59,12 +65,12 @@ class TextFileHelper(FileHelper):
             outfile.write(self.text)
 
 
-class OdtFileHelper(FileHelper):
+class ZippedXMLFileHelper(FileHelper):
     XML_TAG = re.compile("<[^>]*>")
 
     def read(self):
         with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
-            self.text = zipped_infile.read("content.xml")
+            self.text = zipped_infile.read(self.CONTENTFILE)
 
     def plain_text(self):
         return self.XML_TAG.sub("", self.text)
@@ -84,14 +90,22 @@ class OdtFileHelper(FileHelper):
             zipped_infile.extractall(unzipped_tempdir)
             filelist = zipped_infile.infolist()
 
-        with open(os.path.join(unzipped_tempdir, "content.xml"), "w") as outfile:
+        with open(os.path.join(unzipped_tempdir, self.CONTENTFILE), "w") as outfile:
             outfile.write(self.text)
 
         with zipfile.ZipFile(outpath, "w") as zipped_outfile:
             for fileinfo in filelist:
-                filepath = fileinfo.orig_filename
+                filepath = fileinfo.filename
                 datapath = os.path.join(unzipped_tempdir, filepath)
                 zipped_outfile.write(datapath, filepath)
+
+
+class OdtFileHelper(ZippedXMLFileHelper):
+    CONTENTFILE = "content.xml"
+
+
+class DocxFileHelper(ZippedXMLFileHelper):
+    CONTENTFILE = "word/document.xml"
 
 
 class Genderiser(object):
