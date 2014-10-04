@@ -1,12 +1,11 @@
 TODO
 
+* user tests on Windows & Mac
+* Some kind of GUI? Launcher people can drag directories onto?
+
 * optional verbose output reporting what substitutions are to be made, what files are processed, etc..
 
 * option of inheritance for other genders, so that all sets of gender-neutral pronouns can use the same gender-neutral words
 
-* Possibility for Word documents: https://github.com/python-openxml/python-docx
-* Also want: odt
-
 * python 3 compatibility
 * packaging later
-* GUI later
