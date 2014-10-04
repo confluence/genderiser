@@ -43,7 +43,6 @@ class FileHelper(object):
             raise GenderiserError("Unable to detect file type of %r." % inpath)
         else:
             return TextFileHelper(inpath, inputdir)
-             
 
 
 class TextFileHelper(FileHelper):
