@@ -9,3 +9,5 @@ TODO
 
 * python 3 compatibility
 * packaging later
+
+* get back to PmWiki integration
