@@ -8,6 +8,53 @@ import ConfigParser
 import StringIO
 import argparse
 
+builtin_config = """
+[main]
+# The regular expression to be used for variables. Must contain at least two groups: one for the character identifier and one for the word identifier. The default regular expression matches variables of the form surname_word:
+variable_regex = ([A-Za-z]+)_([A-Za-z]+)
+
+[genders]
+# This section lists valid genders. Each key must be the name of a section in which a word list for a gender is defined. Values are ignored.
+male =
+female =
+
+[male]
+# Pronouns
+they = he
+them = him
+their = his
+theirs = his
+themselves = himself
+# Common gendered words
+person = man
+youngperson = boy
+parent = father
+grandparent = grandfather
+sibling = brother
+siblingchild = nephew
+parentsibling = uncle
+child = son
+spouse = husband
+
+[female]
+# Pronouns
+they = she
+them = her
+their = her
+theirs = hers
+themselves = herself
+# Common gendered words
+person = woman
+youngperson = girl
+parent = mother
+grandparent = grandmother
+sibling = sister
+siblingchild = niece
+parentsibling = aunt
+child = daughter
+spouse = wife
+"""
+
 class GenderiserError(Exception):
     pass
 
@@ -19,12 +66,15 @@ class Genderiser(object):
         self.subs = {}
         self.files = []
 
-        config_files = ["genderiser.cfg"]
+        # Read the default config
+        self.cp.readfp(StringIO.StringIO(builtin_config))
+
+        # Read config files from the project directory
         if project_dir is not None:
             self.project_dir = project_dir
-            config_files.extend(glob.glob(os.path.join(project_dir, "*.cfg")))
-        self.cp.read(config_files)
-        
+            self.cp.read(glob.glob(os.path.join(project_dir, "*.cfg")))
+
+        # Read config from commandline parameter
         if config_text is not None:
             self.cp.readfp(StringIO.StringIO(config_text.replace("\\n", "\n")))
 
