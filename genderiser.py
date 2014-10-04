@@ -8,6 +8,7 @@ import sys
 import ConfigParser
 import StringIO
 import argparse
+import tempfile
 
 class GenderiserError(Exception):
     pass
@@ -75,8 +76,21 @@ class OdtFileHelper(FileHelper):
         if not os.path.exists(outfiledir):
             os.makedirs(outfiledir)
 
+        # Surprisingly hard. Decompress the zip, overwrite content.xml, recompress the zip to a new location.
+
+        unzipped_tempdir = tempfile.mkdtemp()
+
+        with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
+            zipped_infile.extractall(unzipped_tempdir)
+
+        with open(os.path.join(unzipped_tempdir, "context.xml"), "w") as outfile:
+            outfile.write(self.text)
+
         with zipfile.ZipFile(outpath, "w") as zipped_outfile:
-            zipped_outfile.write("content.xml", self.text)
+            for root, dirs, files in os.walk(unzipped_tempdir):
+                for phile in files:
+                    corrected_path = os.path.relpath(os.path.join(root, phile), unzipped_tempdir)
+                    zipped_outfile.write(os.path.join(root, phile), corrected_path)
 
 
 class Genderiser(object):
@@ -208,7 +222,7 @@ spouse = wife
             filehelper.text = self.variable_regex.sub(var_sub, filehelper.text)
 
             # Print a preview to stdout
-            if preview is not None:
+            if preview:
                 print "%s:" % filehelper.filename
                 print "-" * (len(filehelper.filename) + 1)
                 print filehelper.plain_text().strip()
