@@ -4,6 +4,7 @@ TODO
 * Some kind of GUI? Launcher people can drag directories onto?
 
 * Try this: http://mindlesstechnology.wordpress.com/2008/03/29/make-python-scripts-droppable-in-windows/
+* maybe py2exe? https://stackoverflow.com/questions/142844/drag-and-drop-onto-python-script-in-windows-explorer
 
 * optional verbose output reporting what substitutions are to be made, what files are processed, etc..
 
