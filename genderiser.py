@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import re
+import zipfile
 import os
 import glob
 import sys
@@ -8,7 +9,79 @@ import ConfigParser
 import StringIO
 import argparse
 
-builtin_config = """
+class GenderiserError(Exception):
+    pass
+
+
+class FileHelper(object):
+    def __init__(self, inpath, inputdir):
+        self.inpath = inpath
+        self.inputdir = inputdir
+        self.filename = os.path.relpath(inpath, inputdir)
+
+        self.text = None
+
+    def read(self):
+        raise NotImplementedError()
+
+    def plain_text(self):
+        raise NotImplementedError()
+        
+    def write(self, outputdir):
+        raise NotImplementedError()
+
+    @classmethod
+    def get_helper(cls, inpath, inputdir):
+        if zipfile.is_zipfile(inpath):
+            return OdtFileHelper(inpath, inputdir)
+        else:
+            return TextFileHelper(inpath, inputdir)
+             
+
+
+class TextFileHelper(FileHelper):
+    def read(self):
+        with open(self.inpath, "r") as infile:
+            self.text = infile.read()
+
+    def plain_text(self):
+        return self.text
+        
+    def write(self, outputdir):
+        outpath = os.path.join(outputdir, self.filename)
+        
+        outfiledir = os.path.dirname(outpath)                
+        if not os.path.exists(outfiledir):
+            os.makedirs(outfiledir)
+
+        with open(outpath, "w") as outfile:
+            outfile.write(self.text)
+
+
+class OdtFileHelper(FileHelper):
+    XML_TAG = re.compile("<[^>]*>")
+
+    def read(self):
+        with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
+            self.text = zipped_infile.read("content.xml")
+
+    def plain_text(self):
+        return self.XML_TAG.sub("", self.text)
+        
+    def write(self, outputdir):
+        outpath = os.path.join(outputdir, self.filename)
+        
+        outfiledir = os.path.dirname(outpath)                
+        if not os.path.exists(outfiledir):
+            os.makedirs(outfiledir)
+
+        with zipfile.ZipFile(outpath, "w") as zipped_outfile:
+            zipped_outfile.write("content.xml", self.text)
+
+
+class Genderiser(object):
+
+    builtin_config = """
 [main]
 # The regular expression to be used for variables. Must contain at least two groups: one for the character identifier and one for the word identifier. The default regular expression matches variables of the form surname_word:
 variable_regex = ([A-Za-z]+)_([A-Za-z]+)
@@ -55,11 +128,6 @@ child = daughter
 spouse = wife
 """
 
-class GenderiserError(Exception):
-    pass
-
-class Genderiser(object):
-
     def __init__(self, project_dir=None, config_text=None):
         self.cp = ConfigParser.SafeConfigParser()
 
@@ -67,7 +135,7 @@ class Genderiser(object):
         self.files = []
 
         # Read the default config
-        self.cp.readfp(StringIO.StringIO(builtin_config))
+        self.cp.readfp(StringIO.StringIO(self.builtin_config))
 
         # Read config files from the project directory
         if project_dir is not None:
@@ -105,10 +173,12 @@ class Genderiser(object):
         if self.cp.has_section("files"):
 
             for filename in self.cp.get("files", "files").split(","):
-                self.files.append(filename.strip())
+                self.files.append(FileHelper.get_helper(os.path.join(self.project_dir, filename), self.project_dir))
 
             if self.cp.has_option("files", "glob"):
-                self.files.extend(glob.glob(self.cp.get("files", "glob")))
+                expanded = glob.glob(os.path.join(self.project_dir, self.cp.get("files", "glob")))
+                for filepath in expanded:
+                    self.files.append(FileHelper.get_helper(filepath, self.project_dir))
 
         if not self.files:
             raise GenderiserError("No files found.")
@@ -118,9 +188,6 @@ class Genderiser(object):
 
         if output_dir is None:
             output_dir = os.path.join(self.project_dir, "output")
-        
-        if not preview and not os.path.exists(output_dir):
-            os.makedirs(output_dir)
 
         def var_sub(m):
             surname, word = m.groups()
@@ -133,26 +200,23 @@ class Genderiser(object):
             else:
                 return "UNKNOWN"
 
-        for filename in self.files:
-            with open(os.path.join(self.project_dir, filename), "r") as infile:
-                text = infile.read()
-                text = self.variable_regex.sub(var_sub, text)
+        for filehelper in self.files:
+            # Read content
+            filehelper.read()
 
-                # print a preview to stdout
-                if preview is not None:
-                    print text
+            # Replace variables
+            filehelper.text = self.variable_regex.sub(var_sub, filehelper.text)
 
-                # otherwise try to write to a file
-                elif output_dir is not None:
-                    outfilename = os.path.join(output_dir, filename)
+            # Print a preview to stdout
+            if preview is not None:
+                print "%s:" % filehelper.filename
+                print "-" * (len(filehelper.filename) + 1)
+                print filehelper.plain_text().strip()
+                print ""
 
-                    outfiledir = os.path.dirname(outfilename)
-                    
-                    if not os.path.exists(outfiledir):
-                        os.makedirs(outfiledir)
-
-                    with open(outfilename, "w") as outfile:
-                        outfile.write(text)
+            # Otherwise try to write to a file
+            elif output_dir is not None:
+                filehelper.write(output_dir)
 
     def substitutions(self):
         print ",".join("%s:%s" % (k, v) for (k, v) in sorted(self.subs.iteritems()))
@@ -161,13 +225,13 @@ class Genderiser(object):
         self.find_files()
         variables_used = set()
 
-        for filename in self.files:
-            with open(os.path.join(self.project_dir, filename), "r") as infile:
-                for surname, word in self.variable_regex.findall(infile.read()):
-                    variables_used.add("%s_%s" % (surname, word))
-
+        for filehelper in self.files:
+            filehelper.read()
+            for surname, word in self.variable_regex.findall(filehelper.plain_text()):
+                variables_used.add("%s_%s" % (surname, word))
+    
         missing_variables = variables_used - set(self.subs) - set(s.capitalize() for s in self.subs)
-
+    
         print ",".join(m for m in missing_variables)
 
     @classmethod
