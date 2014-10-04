@@ -12,10 +12,6 @@ class TestGenderiser(unittest.TestCase):
         self.stdout = StringIO.StringIO()
         sys.stdout = self.stdout
 
-        self.expected_subs = {"smith_their": "his", "jones_sibling": "sister", "smith_they": "he", "smith_name": "John", "jones_they": "she", "smith_themselves": "himself", "jones_person": "woman", "smith_sibling": "brother", "jones_their": "her", "jones_themselves": "herself", "smith_them": "him", "jones_theirs": "hers", "jones_name": "Mary", "jones_them": "her", "smith_theirs": "his", "smith_person": "man"}
-
-        self.expected_subs_str = "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n"
-
     def last_out(self, strip=True):
         out = self.stdout.getvalue()
         self.stdout = StringIO.StringIO()
@@ -41,7 +37,7 @@ You know a man called John Smith. He has a sister called Mary Jones.
 
     def test_subs(self):
         main(["-s", "example"])
-        self.assertEquals(self.last_out(), self.expected_subs_str)
+        self.assertEquals(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
 
     def test_pass_text_config(self):
         text_config = """
@@ -60,7 +56,7 @@ jones_name = Mary
         
         main(["-s", "-c", text_config])
         
-        self.assertEquals(self.last_out(), self.expected_subs_str)
+        self.assertEquals(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
 
     def test_missing_subs(self):
         try:
