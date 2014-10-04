@@ -82,15 +82,16 @@ class OdtFileHelper(FileHelper):
 
         with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
             zipped_infile.extractall(unzipped_tempdir)
+            filelist = zipped_infile.infolist()
 
-        with open(os.path.join(unzipped_tempdir, "context.xml"), "w") as outfile:
+        with open(os.path.join(unzipped_tempdir, "content.xml"), "w") as outfile:
             outfile.write(self.text)
 
         with zipfile.ZipFile(outpath, "w") as zipped_outfile:
-            for root, dirs, files in os.walk(unzipped_tempdir):
-                for phile in files:
-                    corrected_path = os.path.relpath(os.path.join(root, phile), unzipped_tempdir)
-                    zipped_outfile.write(os.path.join(root, phile), corrected_path)
+            for fileinfo in filelist:
+                filepath = fileinfo.orig_filename
+                datapath = os.path.join(unzipped_tempdir, filepath)
+                zipped_outfile.write(datapath, filepath)
 
 
 class Genderiser(object):
