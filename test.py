@@ -50,37 +50,8 @@ You know a man called John Smith. He has a sister called Mary Jones.
         self.assertEquals(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
 
     def test_missing_subs(self):
-        try:
-            test_project = tempfile.mkdtemp()
-
-            with open(os.path.join(test_project, "test.cfg"), "w") as badconfig:
-                badconfig.write("""
-[files]
-files=Alice.txt
-
-[characters]
-jones = female
-
-[male]
-jones_name = Mark
-
-[female]
-smith_name = Jane
-jones_name = Mary
-            """)
-            
-            with open(os.path.join(test_project, "Alice.txt"), "w") as alice:
-                alice.write("You know a smith_person called smith_name Smith. Smith_they has a jones_sibling called jones_name Jones.")
-            
-            main(["-m", test_project])
-
-            self.assertEquals(self.last_out(), "smith_name,Smith_they,smith_person\n")
-        finally:
-            try:
-                shutil.rmtree(test_project)
-            except OSError as exc:
-                if exc.errno != errno.ENOENT:
-                    raise
+        main(["-m", "test_data/missingsubs"])
+        self.assertEquals(self.last_out(), "jones_name,smith_name,Smith_they,smith_person\n")
 
     def test_bad_document_type(self):
         with self.assertRaises(GenderiserError):

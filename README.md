@@ -54,6 +54,8 @@ What works so far?
 
 1. You can run genderiser on the commandline, giving it a directory as a parameter. The directory should contain all your document files, as well as a ``.cfg`` file which describes your project. A simple example is provided in the ``example`` directory. By default Genderiser will save the output files to an ``output`` directory inside your project directory.
 
+1. Genderiser now supports singular "they" and Spivak pronouns out of the box. You can also create custom genders in your config file. Genders can inherit from other genders, so you can easily define a custom set of gender-neutral pronouns while inheriting the built-in list of gender-neutral words.
+
 1. Genderiser has additional command-line options which let you:
     * specify a different output directory,
     * preview the output files instead of saving them,
@@ -70,8 +72,6 @@ Future goals
 1. Testing on Windows, and a way to allow the user to drag directories onto an executable in the file manager.
 
 1. PmWiki integration. This will probably be a complete rewrite in PHP.
-
-1. More pronoun options! Singular "they"; Spivak pronouns; possibility of adding custom gender options and word lists.
 
 1. Some kind of GUI interface.
 
