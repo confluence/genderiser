@@ -7,5 +7,8 @@ Your documents
 Your configuration file
 -----------------------
 
+Installing Genderiser
+---------------------
+
 Running Genderiser
 ------------------

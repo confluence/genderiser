@@ -51,7 +51,7 @@ You know a man called John Smith. He has a sister called Mary Jones.
 
     def test_missing_subs(self):
         main(["-m", "test_data/missingsubs"])
-        self.assertEquals(self.last_out(), "jones_name,smith_name,Smith_they,smith_person\n")
+        self.assertEquals(self.last_out(), "jones_name,Smith_they,smith_name,smith_person\n")
 
     def test_bad_document_type(self):
         with self.assertRaises(GenderiserError):
@@ -68,7 +68,21 @@ You know a man called John Smith. He has a sister called Mary Jones.  Yesterday 
         
         self.assertEquals(self.last_out(), expected_preview)
 
+    def test_glob(self):        
+        main(["-p", "test_data/glob"])
+        expected_preview = """Alice.txt:
+----------
+You know a man called John Smith. He has a sister called Mary Jones.
+
+Bob.txt:
+--------
+You know a man called John Smith. He has a sister called Mary Jones.
+
+"""
+        self.assertEquals(self.last_out(), expected_preview)
+
     # TODO:
+    # subdirectories -- test resulting structure
     # Various kinds of bad input
 
 

@@ -258,12 +258,12 @@ themselves = emself
             raise GenderiserError("No project directory specified.")
 
         if self.cp.has_section("files"):
-
-            for filename in self.cp.get("files", "files").split(","):
-                self.files.append(FileHelper.get_helper(os.path.join(self.project_dir, filename), self.project_dir))
+            if self.cp.has_option("files", "files"):
+                for filename in self.cp.get("files", "files").split(","):
+                    self.files.append(FileHelper.get_helper(os.path.join(self.project_dir, filename), self.project_dir))
 
             if self.cp.has_option("files", "glob"):
-                expanded = glob.glob(os.path.join(self.project_dir, self.cp.get("files", "glob")))
+                expanded = sorted(glob.glob(os.path.join(self.project_dir, self.cp.get("files", "glob"))))
                 for filepath in expanded:
                     self.files.append(FileHelper.get_helper(filepath, self.project_dir))
 
