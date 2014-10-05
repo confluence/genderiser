@@ -1,5 +1,7 @@
 TODO
 
+* Prevent the user from nuking their original files by setting the output directory to be the same as the input directory.  Normalise the paths before checking.
+
 * user tests on Windows & Mac
 * Some kind of GUI? Launcher people can drag directories onto?
 

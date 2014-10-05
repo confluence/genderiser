@@ -45,18 +45,29 @@ If a 10-character LARP has a single gender-switchable character, and assuming th
 
 I believe that this technical limitation is preventing writers who are not also programmers from making a particular creative choice in their writing, and I would like to change this by providing a simple, accessible program which non-technical users can integrate into their existing workflow.  I currently have a non-production-ready hacked-together prototype which I plan to replicate in a brand new, clean implementation.
 
-Goals and milestones
---------------------
+What works so far?
+------------------
 
-1. A basic implementation which runs on the command line, can process plain text files, handles masculine and feminine pronouns and obvious gendered words (e.g. "brother" / "sister") and allows the addition of custom additional gendered words. User documentation.
+1. Genderiser can process plain text files (which potentially includes all kinds of markup), as well as ``.odt`` and ``.docx`` files (and it can easily be extended to any other zipped xml format).
 
-2. Integration with PmWiki, my CMS of choice. Preferably not via a complete reimplementation in PHP.
+2. Genderiser is a single, unpackaged Python script with no external dependencies. It can (in theory) be run on any operating system with a recent Python 2 installed.
 
-3. Integration with popular word processor file formats.
+3. You can run genderiser on the commandline, giving it a directory as a parameter. The directory should contain all your document files, as well as a ``.cfg`` file which describes your project. A simple example is provided in the ``example`` directory. By default Genderiser will save the output files to an ``output`` directory inside your project directory.
+
+4. Genderiser has additional command-line options which let you specify a different output directory, preview the output files instead of saving them, or print a list of variables you have used that are not defined in the config file.
+
+Future goals
+------------
+
+1. Better documentation.
+
+2. Testing on Windows, and a way to allow the user to drag directories onto an executable in the file manager.
+
+3. PmWiki integration. This will probably be a complete rewrite in PHP.
 
 4. More pronoun options! Singular "they"; Spivak pronouns; possibility of adding custom gender options and word lists.
 
-5. Fancy packaging and GUI
+5. Some kind of GUI interface.
 
 What about other (human) languages?
 -----------------------------------
