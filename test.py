@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import unittest
 import sys
 import StringIO
@@ -5,7 +7,7 @@ import tempfile
 import shutil
 import errno
 import os
-from genderiser import Genderiser, main
+from genderiser import Genderiser, main, GenderiserError
 
 class TestGenderiser(unittest.TestCase):
     def setUp(self):
@@ -38,6 +40,9 @@ You know a man called John Smith. He has a sister called Mary Jones.
     def test_nothing_missing(self):
         main(["-m", "example"])
         self.assertEquals(self.last_out(), "\n")
+
+    def test_bad_output_dir(self):
+        self.assertRaises(GenderiserError, main, ["-o", "example", "example"])
 
     def test_subs(self):
         main(["-s", "example"])
