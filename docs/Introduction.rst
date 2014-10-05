@@ -4,12 +4,9 @@ Introduction
 What is Genderiser?
 -------------
 
-A program which assists writers in making the genders of characters within large bodies of English-language text dynamically configurable.
+Genderiser is a program which makes it easier for writers to switch the genders of characters within large bodies of English-language text.
 
-How does it do that?
---------------------
-
-It replaces placeholder variables in the text with personal pronouns according to genders which can be configured for each character.
+Writers can use placeholder variables instead of pronouns and other gendered words within the source text. Genderiser processes these documents and generates copies in which the variables have been replaced by the appropriate English words. The gender of each character is set in a simple configuration file.
 
 What is this for?
 -----------------
