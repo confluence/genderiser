@@ -81,10 +81,18 @@ You know a man called John Smith. He has a sister called Mary Jones.
 """
         self.assertEquals(self.last_out(), expected_preview)
 
-    # TODO:
-    # subdirectories -- test resulting structure
-    # Various kinds of bad input
+    def test_subdir(self):        
+        main(["-p", "test_data/subdir"])
+        expected_preview = """One/Alice.txt:
+--------------
+You know a man called John Smith. He has a sister called Mary Jones.
 
+Two/Bob.txt:
+------------
+You know a man called John Smith. He has a sister called Mary Jones.
+
+"""
+        self.assertEquals(self.last_out(), expected_preview)
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,6 +9,7 @@ import ConfigParser
 import StringIO
 import argparse
 import tempfile
+import shutil
 import string
 
 class GenderiserError(Exception):
@@ -107,20 +108,27 @@ class ZippedXMLFileHelper(FileHelper):
 
         # Surprisingly hard. Decompress the zip, overwrite content.xml, recompress the zip to a new location.
 
-        unzipped_tempdir = tempfile.mkdtemp()
+        try:
+            unzipped_tempdir = tempfile.mkdtemp()
 
-        with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
-            zipped_infile.extractall(unzipped_tempdir)
-            filelist = zipped_infile.infolist()
+            with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
+                zipped_infile.extractall(unzipped_tempdir)
+                filelist = zipped_infile.infolist()
 
-        with open(os.path.join(unzipped_tempdir, self.CONTENTFILE), "w") as outfile:
-            outfile.write(self.text)
+            with open(os.path.join(unzipped_tempdir, self.CONTENTFILE), "w") as outfile:
+                outfile.write(self.text)
 
-        with zipfile.ZipFile(outpath, "w") as zipped_outfile:
-            for fileinfo in filelist:
-                filepath = fileinfo.filename
-                datapath = os.path.join(unzipped_tempdir, filepath)
-                zipped_outfile.write(datapath, filepath)
+            with zipfile.ZipFile(outpath, "w") as zipped_outfile:
+                for fileinfo in filelist:
+                    filepath = fileinfo.filename
+                    datapath = os.path.join(unzipped_tempdir, filepath)
+                    zipped_outfile.write(datapath, filepath)
+        finally:
+            try:
+                shutil.rmtree(unzipped_tempdir)
+            except OSError as e:
+                if e.errno != errno.ENOENT:
+                    raise
 
 
 class OdtFileHelper(ZippedXMLFileHelper):
@@ -133,7 +141,7 @@ class DocxFileHelper(ZippedXMLFileHelper):
 
 class Genderiser(object):
 
-    builtin_config = """
+    BUILTIN_CONFIG = """
 [main]
 # The regular expression to be used for variables. Must contain at least two groups: one for the character identifier and one for the word identifier. The default regular expression matches variables of the form surname_word:
 variable_regex = ([A-Za-z]+)_([A-Za-z]+)
@@ -213,7 +221,7 @@ themselves = emself
         self.files = []
 
         # Read the default config
-        self.cp.readfp(StringIO.StringIO(self.builtin_config))
+        self.cp.readfp(StringIO.StringIO(self.BUILTIN_CONFIG))
 
         # Read config files from the project directory
         if project_dir is not None:
@@ -222,7 +230,8 @@ themselves = emself
 
         self.create_subs()
 
-        self.variable_regex = re.compile(self.cp.get("main", "variable_regex"))
+        self.VARIABLE_REGEX = re.compile(self.cp.get("main", "variable_regex"))
+        self.LISTSEP = re.compile(", *")
 
     def create_subs(self):
         for surname, gender in self.cp.items("characters"):
@@ -259,7 +268,7 @@ themselves = emself
 
         if self.cp.has_section("files"):
             if self.cp.has_option("files", "files"):
-                for filename in self.cp.get("files", "files").split(","):
+                for filename in self.LISTSEP.split(self.cp.get("files", "files")):
                     self.files.append(FileHelper.get_helper(os.path.join(self.project_dir, filename), self.project_dir))
 
             if self.cp.has_option("files", "glob"):
@@ -294,7 +303,7 @@ themselves = emself
             filehelper.read()
 
             # Replace variables
-            filehelper.text = self.variable_regex.sub(var_sub, filehelper.text)
+            filehelper.text = self.VARIABLE_REGEX.sub(var_sub, filehelper.text)
 
             # Print a preview to stdout
             if preview:
@@ -316,7 +325,7 @@ themselves = emself
 
         for filehelper in self.files:
             filehelper.read()
-            for surname, word in self.variable_regex.findall(filehelper.plain_text()):
+            for surname, word in self.VARIABLE_REGEX.findall(filehelper.plain_text()):
                 variables_used.add("%s_%s" % (surname, word))
     
         missing_variables = variables_used - set(self.subs) - set(s.capitalize() for s in self.subs)
