@@ -216,6 +216,8 @@ spouse = wife
 
         if output_dir is None:
             output_dir = os.path.join(self.project_dir, "output")
+        elif os.path.samefile(self.project_dir, output_dir):
+            raise GenderiserError("Output directory cannot be the same as input directory. You would overwrite your files!")
 
         def var_sub(m):
             surname, word = m.groups()

@@ -48,26 +48,28 @@ I believe that this technical limitation is preventing writers who are not also 
 What works so far?
 ------------------
 
-1. Genderiser can process plain text files (which potentially includes all kinds of markup), as well as ``.odt`` and ``.docx`` files (and it can easily be extended to any other zipped xml format).
+#. Genderiser can process plain text files (which potentially includes all kinds of markup), as well as ``.odt`` and ``.docx`` files (and it can easily be extended to any other zipped xml format).
 
-2. Genderiser is a single, unpackaged Python script with no external dependencies. It can (in theory) be run on any operating system with a recent Python 2 installed.
+#. Genderiser is a single, unpackaged Python script with no external dependencies. It can (in theory) be run on any operating system with a recent Python 2 installed.
 
-3. You can run genderiser on the commandline, giving it a directory as a parameter. The directory should contain all your document files, as well as a ``.cfg`` file which describes your project. A simple example is provided in the ``example`` directory. By default Genderiser will save the output files to an ``output`` directory inside your project directory.
+#. You can run genderiser on the commandline, giving it a directory as a parameter. The directory should contain all your document files, as well as a ``.cfg`` file which describes your project. A simple example is provided in the ``example`` directory. By default Genderiser will save the output files to an ``output`` directory inside your project directory.
 
-4. Genderiser has additional command-line options which let you specify a different output directory, preview the output files instead of saving them, or print a list of variables you have used that are not defined in the config file.
+#. Genderiser has additional command-line options which let you specify a different output directory, preview the output files instead of saving them, or print a list of variables you have used that are not defined in the config file.
 
 Future goals
 ------------
 
-1. Better documentation.
+#. Better documentation.
 
-2. Testing on Windows, and a way to allow the user to drag directories onto an executable in the file manager.
+#. More complete unit tests.
 
-3. PmWiki integration. This will probably be a complete rewrite in PHP.
+#. Testing on Windows, and a way to allow the user to drag directories onto an executable in the file manager.
 
-4. More pronoun options! Singular "they"; Spivak pronouns; possibility of adding custom gender options and word lists.
+#. PmWiki integration. This will probably be a complete rewrite in PHP.
 
-5. Some kind of GUI interface.
+#. More pronoun options! Singular "they"; Spivak pronouns; possibility of adding custom gender options and word lists.
+
+#. Some kind of GUI interface.
 
 What about other (human) languages?
 -----------------------------------
