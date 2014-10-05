@@ -9,6 +9,7 @@ import ConfigParser
 import StringIO
 import argparse
 import tempfile
+import string
 
 class GenderiserError(Exception):
     pass
@@ -32,6 +33,27 @@ class FileHelper(object):
         raise NotImplementedError()
 
     @classmethod
+    def is_text(cls, inpath):
+        """Cribbed from https://stackoverflow.com/questions/1446549/how-to-identify-binary-and-text-files-using-python"""
+        s = open(inpath).read(512)
+        text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
+        _null_trans = string.maketrans("", "")
+        if not s:
+            # Empty files are considered text
+            return True
+        if "\0" in s:
+            # Files with null bytes are likely binary
+            return False
+        # Get the non-text characters (maps a character to itself then
+        # use the 'remove' option to get rid of the text characters.)
+        t = s.translate(_null_trans, text_characters)
+        # If more than 30% non-text characters, then
+        # this is considered a binary file
+        if float(len(t))/float(len(s)) > 0.30:
+            return False
+        return True
+
+    @classmethod
     def get_helper(cls, inpath, inputdir):
         if zipfile.is_zipfile(inpath):
             with zipfile.ZipFile(inpath, "r") as zipped_infile:
@@ -41,8 +63,10 @@ class FileHelper(object):
                 if ziphelper.CONTENTFILE in [f.filename for f in filelist]:
                     return ziphelper(inpath, inputdir)
             raise GenderiserError("Unable to detect file type of %r." % inpath)
-        else:
+        elif cls.is_text(inpath):
             return TextFileHelper(inpath, inputdir)
+        else:
+            raise GenderiserError("Unable to detect file type of %r." % inpath)
 
 
 class TextFileHelper(FileHelper):
