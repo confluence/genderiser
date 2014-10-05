@@ -40,7 +40,7 @@ You might think that this is a trivial problem to solve: just print two characte
 
 If a 10-character LARP has a single gender-switchable character, and assuming that you are sticking to two gender possibilities, you could write two copies of the entire LARP: one in which the character is male and one in which she is female. You can do that by hand, although keeping both copies in sync would be pretty annoying. But what if there are two such characters? You have four possible combinations, so you need to maintain four different copies. Five characters? 32 combinations.  All ten?  1024.  Clearly this is no longer a tractable problem for non-technical LARP writers, although it is easy to solve with some kind of script if you are also a programmer.
 
-I believe that this technical limitation is preventing writers who are not also programmers from making a particular creative choice in their writing, and I would like to change this by providing a simple, accessible program which non-technical users can integrate into their existing workflow.  I currently have a non-production-ready hacked-together prototype which I plan to replicate in a brand new, clean implementation.
+I believe that this technical limitation is preventing writers who are not also programmers from making a particular creative choice in their writing, and I would like to change this by providing a simple, accessible program which non-technical users can integrate into their existing workflow.
 
 What works so far?
 ------------------
