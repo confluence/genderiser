@@ -7,7 +7,7 @@ import tempfile
 import shutil
 import errno
 import os
-from genderiser import Genderiser, main, GenderiserError
+from genderiser import Genderiser, main, GenderiserError, FileHelper
 
 class TestGenderiser(unittest.TestCase):
     def setUp(self):
@@ -42,7 +42,8 @@ You know a man called John Smith. He has a sister called Mary Jones.
         self.assertEquals(self.last_out(), "\n")
 
     def test_bad_output_dir(self):
-        self.assertRaises(GenderiserError, main, ["-o", "example", "example"])
+        with self.assertRaises(GenderiserError):
+            main(["-o", "example", "example"])
 
     def test_subs(self):
         main(["-s", "example"])
@@ -82,6 +83,10 @@ jones_name = Mary
             except OSError as exc:
                 if exc.errno != errno.ENOENT:
                     raise
+
+    def test_bad_document_type(self):
+        with self.assertRaises(GenderiserError):
+            FileHelper.get_helper("test_data/Alice.doc", "somedir")
         
     # TODO:
     # Same input and output dir
