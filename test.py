@@ -28,6 +28,10 @@ Alice.odt:
 ----------
 You know a man called John Smith. He has a sister called Mary Jones.
 
+Alice.docx:
+-----------
+You know a man called John Smith. He has a sister called Mary Jones.
+
 """
         self.assertEquals(self.last_out(), expected_preview)
 
@@ -37,25 +41,6 @@ You know a man called John Smith. He has a sister called Mary Jones.
 
     def test_subs(self):
         main(["-s", "example"])
-        self.assertEquals(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
-
-    def test_pass_text_config(self):
-        text_config = """
-[characters]
-smith = male
-jones = female
-
-[male]
-smith_name = John
-jones_name = Mark
-
-[female]
-smith_name = Jane
-jones_name = Mary
-        """.replace("\n","\\n")
-        
-        main(["-s", "-c", text_config])
-        
         self.assertEquals(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
 
     def test_missing_subs(self):
@@ -93,7 +78,10 @@ jones_name = Mary
                 if exc.errno != errno.ENOENT:
                     raise
         
-    # TODO: bad config and input tests
+    # TODO:
+    # Same input and output dir
+    # Various kinds of bad input
+    # Bad file format
 
 
 if __name__ == "__main__":

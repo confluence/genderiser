@@ -156,7 +156,7 @@ child = daughter
 spouse = wife
 """
 
-    def __init__(self, project_dir=None, config_text=None):
+    def __init__(self, project_dir=None):
         self.cp = ConfigParser.SafeConfigParser()
 
         self.subs = {}
@@ -169,10 +169,6 @@ spouse = wife
         if project_dir is not None:
             self.project_dir = project_dir
             self.cp.read(glob.glob(os.path.join(project_dir, "*.cfg")))
-
-        # Read config from commandline parameter
-        if config_text is not None:
-            self.cp.readfp(StringIO.StringIO(config_text.replace("\\n", "\n")))
 
         self.create_subs()
 
@@ -266,7 +262,7 @@ spouse = wife
 
     @classmethod
     def create_from(cls, args):
-        return cls(args.project_dir, args.config)
+        return cls(args.project_dir)
 
     def process(self, args):
         if args.substitutions:
@@ -283,27 +279,17 @@ spouse = wife
 
 def main(args=None):
     parser = argparse.ArgumentParser(description="Replace placeholder variables with gendered words in text files")
-    parser.add_argument("-o", "--output-dir", help="Directory to which modified files will be written. By default a directory named 'output' will be created in the project directory.")
-
-    parser.add_argument("project_dir", help="Project directory to process", nargs="?", default=None)
-    parser.add_argument("-c", "--config", help="String containing project config. To be used from an external replacement program with -s. Newlines must be escaped with literal \\n.", default=None)
+    
+    parser.add_argument("project_dir", help="Project directory to process")
 
     action = parser.add_mutually_exclusive_group(required=False)
+    
+    parser.add_argument("-o", "--output-dir", help="Directory to which modified files will be written. By default a directory named 'output' will be created in the project directory.")
     action.add_argument("-s", "--substitutions", help="Suppress all other output and print a list of substitutions.", action="store_true")
     action.add_argument("-p", "--preview", help="Suppress all other output and print the modified file contents to standard output.", action="store_true")
     action.add_argument("-m", "--missing", help="Suppress all other output and print a list of variables for which no replacements could be found.", action="store_true")
 
     args = parser.parse_args(args)
-
-    if not (args.project_dir or args.config):
-        parser.print_usage()
-        print "genderiser.py: error: one of project_dir and -c/--config is required"
-        return 1
-
-    elif not (args.project_dir or args.substitutions):
-        parser.print_usage()
-        print "genderiser.py: error: one of project_dir and -s/--substitutions is required"
-        return 1
 
     gen = Genderiser.create_from(args)
     gen.process(args)
