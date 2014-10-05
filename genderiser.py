@@ -139,9 +139,11 @@ class Genderiser(object):
 variable_regex = ([A-Za-z]+)_([A-Za-z]+)
 
 [genders]
-# This section lists valid genders. Each key must be the name of a section in which a word list for a gender is defined. Values are ignored.
+# This section lists valid genders. Each key must be the name of a section in which a word list for a gender is defined. Values are optional and indicate a parent gender from which the gender inherits.
 male =
 female =
+they =
+spivak = they
 
 [male]
 # Pronouns
@@ -178,6 +180,30 @@ siblingchild = niece
 parentsibling = aunt
 child = daughter
 spouse = wife
+
+[they]
+# Pronouns
+they = they
+them = them
+their = their
+theirs = theirs
+themselves = themselves
+# Common gendered words
+person = person
+youngperson = child
+parent = parent
+grandparent = grandparent
+sibling = sibling
+child = child
+spouse = spouse
+
+[spivak]
+# Pronouns
+they = e
+them = em
+their = eir
+theirs = eirs
+themselves = emself
 """
 
     def __init__(self, project_dir=None):
@@ -200,13 +226,26 @@ spouse = wife
 
     def create_subs(self):
         for surname, gender in self.cp.items("characters"):
-            if gender not in self.cp.options("genders"):
-                raise GenderiserError("%r is not listed in the genders configuration section." % gender)
+            # gender can inherit from other genders
+            # TODO: do this once for each gender, before processing the characters!
+            current_gender = gender
+            gender_dicts = []
 
-            if gender not in self.cp.sections():
-                raise GenderiserError("No configuration section found for gender %r." % gender)
+            while current_gender:
+                if current_gender not in self.cp.options("genders"):
+                    raise GenderiserError("%r is not listed in the genders configuration section." % current_gender)
 
-            for key, value in self.cp.items(gender):
+                if current_gender not in self.cp.sections():
+                    raise GenderiserError("No configuration section found for gender %r." % current_gender)
+
+                gender_dicts.append(dict(self.cp.items(current_gender)))
+                current_gender = self.cp.get("genders", current_gender)
+
+            gender_dict = {}
+            for d in reversed(gender_dicts):
+                gender_dict.update(d)
+
+            for key, value in gender_dict.iteritems():
                 if key.startswith("%s_" % surname): # special variable for this character
                     self.subs[key] = value
                 elif "_" in key: # special variable for a different character

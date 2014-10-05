@@ -71,8 +71,6 @@ jones_name = Mary
             
             with open(os.path.join(test_project, "Alice.txt"), "w") as alice:
                 alice.write("You know a smith_person called smith_name Smith. Smith_they has a jones_sibling called jones_name Jones.")
-
-            # TODO: change this temporary file into a context?
             
             main(["-m", test_project])
 
@@ -87,11 +85,20 @@ jones_name = Mary
     def test_bad_document_type(self):
         with self.assertRaises(GenderiserError):
             FileHelper.get_helper("test_data/Alice.doc", "somedir")
+
+    def test_gender_inheritance(self):
+        main(["-p", "test_data/spivak"])
+
+        expected_preview = """Alice.txt:
+----------
+You know a man called John Smith. He has a sister called Mary Jones.  Yesterday you met a person called Alex Kim, who invited you to have lunch with em.
+
+"""
         
+        self.assertEquals(self.last_out(), expected_preview)
+
     # TODO:
-    # Same input and output dir
     # Various kinds of bad input
-    # Bad file format
 
 
 if __name__ == "__main__":
