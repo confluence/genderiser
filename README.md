@@ -54,7 +54,11 @@ What works so far?
 
 1. You can run genderiser on the commandline, giving it a directory as a parameter. The directory should contain all your document files, as well as a ``.cfg`` file which describes your project. A simple example is provided in the ``example`` directory. By default Genderiser will save the output files to an ``output`` directory inside your project directory.
 
-1. Genderiser has additional command-line options which let you specify a different output directory, preview the output files instead of saving them, or print a list of variables you have used that are not defined in the config file.
+1. Genderiser has additional command-line options which let you:
+    * specify a different output directory,
+    * preview the output files instead of saving them,
+    * see a list of known variables and their current values, or
+    * see a list of variables you have used that are not defined in the config file.
 
 Future goals
 ------------
