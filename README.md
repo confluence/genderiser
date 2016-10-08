@@ -74,6 +74,8 @@ Future goals
 
 1. Possibly an automated import tool which parses text written with hardcoded pronouns and attempts to guess what variables to use using natural language processing techniques.
 
+1. A generic way to integrate with existing markup / templating languages, e.g. a configurable format for the substitutions which can be saved to a file and imported, or passed as a parameter.
+
 What about other (human) languages?
 -----------------------------------
 
