@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import re
 import zipfile
 import os
 import glob
 import sys
-import ConfigParser
-import StringIO
+import configparser
+import io
 import argparse
 import tempfile
 import shutil
@@ -36,23 +36,23 @@ class FileHelper(object):
     @classmethod
     def is_text(cls, inpath):
         """Cribbed from https://stackoverflow.com/questions/1446549/how-to-identify-binary-and-text-files-using-python"""
-        s = open(inpath).read(512)
-        text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
-        _null_trans = string.maketrans("", "")
+        is_text = True
+
+        with open(inpath, "rb") as f:
+            s = f.read(512)
+        
         if not s:
-            # Empty files are considered text
-            return True
-        if "\0" in s:
-            # Files with null bytes are likely binary
-            return False
-        # Get the non-text characters (maps a character to itself then
-        # use the 'remove' option to get rid of the text characters.)
-        t = s.translate(_null_trans, text_characters)
-        # If more than 30% non-text characters, then
-        # this is considered a binary file
-        if float(len(t))/float(len(s)) > 0.30:
-            return False
-        return True
+            is_text = True
+        elif b"\0" in s:
+            is_text = False
+        else:
+            text_characters = bytearray(i for i in range(32, 127)) + b"\n\r\t\b"
+            t = s.translate(bytes.maketrans(b"", b""), text_characters)
+            
+            if len(t)/len(s) > 0.3:
+                is_text = False
+
+        return is_text
 
     @classmethod
     def get_helper(cls, inpath, inputdir):
@@ -93,8 +93,10 @@ class ZippedXMLFileHelper(FileHelper):
     XML_TAG = re.compile("<[^>]*>")
 
     def read(self):
-        with zipfile.ZipFile(self.inpath, "r") as zipped_infile:
-            self.text = zipped_infile.read(self.CONTENTFILE)
+        with zipfile.ZipFile(self.inpath) as zipped_infile:
+            with zipped_infile.open(self.CONTENTFILE, "r") as contentfile:
+                contentfile = io.TextIOWrapper(contentfile)
+                self.text = contentfile.read()
 
     def plain_text(self):
         return self.XML_TAG.sub("", self.text)
@@ -215,13 +217,13 @@ themselves = emself
 """
 
     def __init__(self, project_dir=None):
-        self.cp = ConfigParser.SafeConfigParser()
+        self.cp = configparser.ConfigParser()
 
         self.subs = {}
         self.files = []
 
         # Read the default config
-        self.cp.readfp(StringIO.StringIO(self.BUILTIN_CONFIG))
+        self.cp.read_file(io.StringIO(self.BUILTIN_CONFIG))
 
         # Read config files from the project directory
         if project_dir is not None:
@@ -254,7 +256,7 @@ themselves = emself
             for d in reversed(gender_dicts):
                 gender_dict.update(d)
 
-            for key, value in gender_dict.iteritems():
+            for key, value in gender_dict.items():
                 if key.startswith("%s_" % surname): # special variable for this character
                     self.subs[key] = value
                 elif "_" in key: # special variable for a different character
@@ -307,17 +309,17 @@ themselves = emself
 
             # Print a preview to stdout
             if preview:
-                print "%s:" % filehelper.filename
-                print "-" * (len(filehelper.filename) + 1)
-                print filehelper.plain_text().strip()
-                print ""
+                print("%s:" % filehelper.filename)
+                print("-" * (len(filehelper.filename) + 1))
+                print(filehelper.plain_text().strip())
+                print("")
 
             # Otherwise try to write to a file
             elif output_dir is not None:
                 filehelper.write(output_dir)
 
     def substitutions(self):
-        print ",".join("%s:%s" % (k, v) for (k, v) in sorted(self.subs.iteritems()))
+        print(",".join("%s:%s" % (k, v) for (k, v) in sorted(self.subs.items())))
 
     def missing(self):
         self.find_files()
@@ -326,11 +328,11 @@ themselves = emself
         for filehelper in self.files:
             filehelper.read()
             for surname, word in self.VARIABLE_REGEX.findall(filehelper.plain_text()):
-                variables_used.add("%s_%s" % (surname, word))
+                variables_used.add(("%s_%s" % (surname, word)).lower())
     
         missing_variables = variables_used - set(self.subs) - set(s.capitalize() for s in self.subs)
     
-        print ",".join(m for m in missing_variables)
+        print(",".join(m for m in sorted(missing_variables)))
 
     @classmethod
     def create_from(cls, args):

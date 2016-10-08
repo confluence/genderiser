@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import sys
-import StringIO
+import io
 import tempfile
 import shutil
 import errno
@@ -11,12 +11,12 @@ from genderiser import Genderiser, main, GenderiserError, FileHelper
 
 class TestGenderiser(unittest.TestCase):
     def setUp(self):
-        self.stdout = StringIO.StringIO()
+        self.stdout = io.StringIO()
         sys.stdout = self.stdout
 
     def last_out(self, strip=True):
         out = self.stdout.getvalue()
-        self.stdout = StringIO.StringIO()
+        self.stdout = io.StringIO()
         sys.stdout = self.stdout
         return out
 
@@ -35,11 +35,11 @@ Alice.docx:
 You know a man called John Smith. He has a sister called Mary Jones.
 
 """
-        self.assertEquals(self.last_out(), expected_preview)
+        self.assertEqual(self.last_out(), expected_preview)
 
     def test_nothing_missing(self):
         main(["-m", "example"])
-        self.assertEquals(self.last_out(), "\n")
+        self.assertEqual(self.last_out(), "\n")
 
     def test_bad_output_dir(self):
         with self.assertRaises(GenderiserError):
@@ -47,11 +47,11 @@ You know a man called John Smith. He has a sister called Mary Jones.
 
     def test_subs(self):
         main(["-s", "example"])
-        self.assertEquals(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
+        self.assertEqual(self.last_out(), "jones_child:daughter,jones_grandparent:grandmother,jones_name:Mary,jones_parent:mother,jones_parentsibling:aunt,jones_person:woman,jones_sibling:sister,jones_siblingchild:niece,jones_spouse:wife,jones_their:her,jones_theirs:hers,jones_them:her,jones_themselves:herself,jones_they:she,jones_youngperson:girl,smith_child:son,smith_grandparent:grandfather,smith_name:John,smith_parent:father,smith_parentsibling:uncle,smith_person:man,smith_sibling:brother,smith_siblingchild:nephew,smith_spouse:husband,smith_their:his,smith_theirs:his,smith_them:him,smith_themselves:himself,smith_they:he,smith_youngperson:boy\n")
 
     def test_missing_subs(self):
         main(["-m", "test_data/missingsubs"])
-        self.assertEquals(self.last_out(), "jones_name,Smith_they,smith_name,smith_person\n")
+        self.assertEqual(self.last_out(), "jones_name,smith_name,smith_person,smith_they\n")
 
     def test_bad_document_type(self):
         with self.assertRaises(GenderiserError):
@@ -66,7 +66,7 @@ You know a man called John Smith. He has a sister called Mary Jones.  Yesterday 
 
 """
         
-        self.assertEquals(self.last_out(), expected_preview)
+        self.assertEqual(self.last_out(), expected_preview)
 
     def test_glob(self):        
         main(["-p", "test_data/glob"])
@@ -79,7 +79,7 @@ Bob.txt:
 You know a man called John Smith. He has a sister called Mary Jones.
 
 """
-        self.assertEquals(self.last_out(), expected_preview)
+        self.assertEqual(self.last_out(), expected_preview)
 
     def test_subdir(self):        
         main(["-p", "test_data/subdir"])
@@ -92,7 +92,7 @@ Two/Bob.txt:
 You know a man called John Smith. He has a sister called Mary Jones.
 
 """
-        self.assertEquals(self.last_out(), expected_preview)
+        self.assertEqual(self.last_out(), expected_preview)
 
 if __name__ == "__main__":
     unittest.main()
